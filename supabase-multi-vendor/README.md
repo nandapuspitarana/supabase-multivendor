@@ -1,87 +1,77 @@
-# Self-Hosted Supabase with Docker
+# Supabase Backend – Hyper-local Multi-vendor Marketplace
 
-This is the official Docker Compose setup for self-hosted Supabase. It provides a complete stack with all Supabase services running locally or on your infrastructure.
+## Tujuan
+- Menyediakan skema database, RLS, dan trigger untuk marketplace RT/RW.
+- Mendukung alur pembayaran transfer manual dan verifikasi oleh Admin via Supabase Studio.
 
-## Getting Started
+## Prasyarat
+- Supabase self-host (Docker) atau Supabase Cloud.
+- Akses ke Supabase Studio/Dashboard.
+- Untuk lokal: Docker Desktop dan PowerShell (Windows).
 
-Follow the detailed setup guide in our documentation: [Self-Hosting with Docker](https://supabase.com/docs/guides/self-hosting/docker)
+## Struktur Skema
+- Enums:
+  - `user_role`: `customer | merchant | admin`
+  - `order_status`: `pending_payment | paid | processing | shipped | completed | cancelled`
+- Tabel:
+  - `profiles` (1:1 ke `auth.users`)
+  - `shops` (satu merchant → satu shop)
+  - `products`
+  - `promos`
+  - `orders`
+  - `order_items`
+- Trigger: membuat `profiles` otomatis saat user baru di `auth.users`.
+- RLS: pelanggan baca produk/toko dan kelola order sendiri; merchant kelola shop/produk sendiri dan melihat order yang masuk; admin full CRUD.
 
-The guide covers:
-- Prerequisites (Git and Docker)
-- Initial setup and configuration
-- Securing your installation
-- Accessing services
-- Updating your instance
+## Lokasi Berkas
+- `supabase-multi-vendor/dev/schema.sql` – DDL lengkap (enums, tabel, FK/PK, indeks, trigger, RLS).
 
-## What's Included
+## Cara Mengaplikasikan Skema
+### Via Supabase Studio
+1. Buka SQL Editor.
+2. Salin isi `schema.sql` dan jalankan.
 
-This Docker Compose configuration includes the following services:
+### Via Docker (Lokal, Windows PowerShell)
+1. Salin berkas ke container:
+   - `docker cp supabase-multi-vendor/dev/schema.sql supabase-db:/tmp/schema.sql`
+2. Eksekusi:
+   - `docker exec supabase-db psql -U postgres -d postgres -f /tmp/schema.sql`
 
-- **[Studio](https://github.com/supabase/supabase/tree/master/apps/studio)** - A dashboard for managing your self-hosted Supabase project
-- **[Kong](https://github.com/Kong/kong)** - Kong API gateway
-- **[GoTrue](https://github.com/supabase/auth)** - JWT-based authentication API for user sign-ups, logins, and session management
-- **[PostgREST](https://github.com/PostgREST/postgrest)** - Web server that turns your PostgreSQL database directly into a RESTful API
-- **[Realtime](https://github.com/supabase/realtime)** - Elixir server that listens to PostgreSQL database changes and broadcasts them over websockets
-- **[Storage](https://github.com/supabase/storage)** - RESTful API for managing files in S3, with Postgres handling permissions
-- **[ImgProxy](https://github.com/imgproxy/imgproxy)** - Fast and secure image processing server
-- **[postgres-meta](https://github.com/supabase/postgres-meta)** - RESTful API for managing Postgres (fetch tables, add roles, run queries)
-- **[PostgreSQL](https://github.com/supabase/postgres)** - Object-relational database with over 30 years of active development
-- **[Edge Runtime](https://github.com/supabase/edge-runtime)** - Web server based on Deno runtime for running JavaScript, TypeScript, and WASM services
-- **[Logflare](https://github.com/Logflare/logflare)** - Log management and event analytics platform
-- **[Vector](https://github.com/vectordotdev/vector)** - High-performance observability data pipeline for logs
-- **[Supavisor](https://github.com/supabase/supavisor)** - Supabase's Postgres connection pooler
+## Prosedur Restart (Lokal)
+1. Hentikan stack:
+   - `docker compose -f supabase-multi-vendor/docker-compose.yml down`
+2. Jalankan kembali:
+   - `docker compose -f supabase-multi-vendor/docker-compose.yml up -d`
+3. Verifikasi:
+   - `docker compose -f supabase-multi-vendor/docker-compose.yml ps`
+   - `iwr http://localhost:4000/health -UseBasicParsing` → harus `200 OK`
+   - `iwr http://localhost:8000 -UseBasicParsing` → akan `Unauthorized` bila tanpa kredensial
 
-## Documentation
+## Peran dan Kebijakan
+- Pelanggan:
+  - Baca semua `shops` dan `products`.
+  - Membuat dan membaca `orders` milik sendiri.
+- Merchant:
+  - Buat/ubah `shops` milik sendiri.
+  - Buat/ubah `products` milik shop sendiri.
+  - Lihat `orders` yang masuk ke shop miliknya.
+- Admin:
+  - Full CRUD seluruh tabel.
 
-- **[Documentation](https://supabase.com/docs/guides/self-hosting/docker)** - Setup and configuration guides
-- **[CHANGELOG.md](./CHANGELOG.md)** - Track recent updates and changes to services
-- **[versions.md](./versions.md)** - Complete history of Docker image versions for rollback reference
+## Alur Pembayaran Manual
+1. Pelanggan membuat order (`status = pending_payment`) dan unggah `payment_proof_url`.
+2. Admin verifikasi transfer di Studio, lalu atur `status = paid` dan isi `admin_notes` bila perlu.
+3. Merchant melihat order masuk untuk `shop_id` miliknya dan memproses pengiriman.
 
-## Updates
+## Tips Pengujian RLS
+- Di SQL editor, set role `authenticated` dan masukkan claim JWT:
+  - `select set_config('request.jwt.claims', '{"sub":"<UUID_USER>"}', true);`
+  - Gunakan `auth.uid()` di policy untuk memverifikasi akses.
 
-To update your self-hosted Supabase instance:
+## Manajemen Peran
+- Promosikan user menjadi `merchant` atau `admin` dengan memperbarui `profiles.role`:
+  - `update public.profiles set role = 'merchant' where id = '<UUID_USER>';`
 
-1. Review [CHANGELOG.md](./CHANGELOG.md) for breaking changes
-2. Check [versions.md](./versions.md) for new image versions
-3. Update `docker-compose.yml` if there are configuration changes
-4. Pull the latest images: `docker compose pull`
-5. Stop services: `docker compose down`
-6. Start services with new configuration: `docker compose up -d`
+## Catatan Windows
+- Postgres data sebaiknya memakai named volume (`db-data`) untuk menghindari error `chmod` pada bind mount Windows.
 
-**Note:** Consider to always backup your database before updating.
-
-## Community & Support
-
-For troubleshooting common issues, see:
-- [GitHub Discussions](https://github.com/orgs/supabase/discussions?discussions_q=is%3Aopen+label%3Aself-hosted) - Questions, feature requests, and workarounds
-- [GitHub Issues](https://github.com/supabase/supabase/issues?q=is%3Aissue%20state%3Aopen%20label%3Aself-hosted) - Known issues
-- [Documentation](https://supabase.com/docs/guides/self-hosting) - Setup and configuration guides
-
-Self-hosted Supabase is community-supported. Get help and connect with other users:
-
-- [Discord](https://discord.supabase.com) - Real-time chat and community support
-- [Reddit](https://www.reddit.com/r/Supabase/) - Community forum
-
-Share your self-hosting experience and read what's working for other users:
-
-- [GitHub Discussions](https://github.com/orgs/supabase/discussions/39820) - Self-hosting: What's working (and what's not)?)
-
-## Important Notes
-
-### Security
-
-⚠️ **The default configuration is not secure for production use.**
-
-Before deploying to production, you must:
-- Update all default passwords and secrets in the `.env` file
-- Generate new JWT secrets
-- Review and update CORS settings
-- Consider setting up a secure proxy in front of self-hosted Supabase
-- Review and adjust network security configuration (ACLs, etc.)
-- Set up proper backup procedures
-
-See the [security section](https://supabase.com/docs/guides/self-hosting/docker#securing-your-services) in the documentation.
-
-## License
-
-This repository is licensed under the Apache 2.0 License. See the main [Supabase repository](https://github.com/supabase/supabase) for details.
