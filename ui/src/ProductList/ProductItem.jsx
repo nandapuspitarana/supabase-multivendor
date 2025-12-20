@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import product1 from '../images/category-baby-care.jpg'
 import product2 from '../images/category-atta-rice-dal.jpg'
@@ -11,18 +11,104 @@ import product8 from '../images/category-pet-care.jpg'
 import product9 from '../images/category-snack-munchies.jpg'
 import product10 from '../images/category-tea-coffee-drinks.jpg'
 import Swal from 'sweetalert2';
+import { supabase } from '../lib/supabaseClient'
 
 const ProductItem = () => {
+  const [items, setItems] = useState([])
+  const [errorMsg, setErrorMsg] = useState('')
+  const [loading, setLoading] = useState(true)
+  const iconMap = {
+    'baby-care': product1,
+    'atta-rice-dal': product2,
+    'bakery-biscuits': product3,
+    'chicken-meat-fish': product4,
+    'cleaning-essentials': product5,
+    'dairy-bread-eggs': product6,
+    'instant-food': product7,
+    'pet-care': product8,
+    'snack-munchies': product9,
+    'tea-coffee-drinks': product10
+  }
+  useEffect(() => {
+    const load = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id,name,price,image_url,shop_id,vendor_id,product_categories(name,slug)')
+        .order('created_at', { ascending: false })
+        .limit(10)
+      if (error) {
+        setErrorMsg(error.message)
+      } else {
+        setItems(data || [])
+      }
+      setLoading(false)
+    }
+    load()
+  }, [])
 
 
-  const handleAddClick = () => {
-    Swal.fire({
-      icon: 'success',
-      title: 'Added to Cart',
-      text: "Product has been added to your cart!",
-      showConfirmButton: true,
-      timer: 3000,
-    });
+  const handleAddClick = async (product) => {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      // User is logged in, add to supabase cart
+      const { data: cartItem, error } = await supabase
+        .from('cart')
+        .insert([
+          { 
+            product_id: product.id, 
+            user_id: session.user.id,
+            quantity: 1,
+            price: product.price
+          }
+        ]);
+
+      if (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: "Could not add product to cart: " + error.message,
+          showConfirmButton: true,
+        });
+      } else {
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Cart',
+          text: "Product has been added to your cart!",
+          showConfirmButton: true,
+          timer: 3000,
+        });
+      }
+    } else {
+      // User is a guest, add to local storage
+      let guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
+      const existingItem = guestCart.find(item => item.id === product.id);
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        const newCartItem = {
+          id: product.id, 
+          product_id: product.id,
+          quantity: 1,
+          products: product 
+        };
+        guestCart.push(newCartItem);
+      }
+
+      localStorage.setItem('guestCart', JSON.stringify(guestCart));
+
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Added to Cart',
+        text: "Product has been added to your cart as a guest!",
+        showConfirmButton: true,
+        timer: 3000,
+      });
+    }
   };
   return (
     <div>
@@ -41,6 +127,64 @@ const ProductItem = () => {
             </div>
             </div>
           </div>
+          {errorMsg ? <div className="text-danger small">Supabase error: {errorMsg}</div> : null}
+          {items.length > 0 ? (
+            <div className="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3">
+              {items.map((p, idx) => {
+                const cat = p.product_categories
+                const slug = cat?.slug
+                const img = (p.image_url && p.image_url.startsWith('http')) ? p.image_url : (slug ? iconMap[slug] : product1)
+                return (
+                  <div className="col fade-zoom" key={p.id || idx}>
+                    <div className="card card-product">
+                      <div className="card-body">
+                        <div className="text-center position-relative ">
+                          <Link to="#!">
+                            <img src={img} alt={p.name} className="mb-3 img-fluid " />
+                          </Link>
+                          <div className="card-product-action">
+                            <Link to="#!" className="btn-action" data-bs-toggle="modal" data-bs-target="#quickViewModal">
+                              <i className="bi bi-eye" data-bs-toggle="tooltip" data-bs-html="true" title="Quick View" />
+                           </Link>
+                            <button onClick={() => handleAddClick(p)} className="btn-action" data-bs-toggle="tooltip" data-bs-html="true" title="Wishlist">
+                              <i className="bi bi-heart" />
+                            </button>
+                            <button className="btn-action" data-bs-toggle="tooltip" data-bs-html="true" title="Compare">
+                              <i className="bi bi-arrow-left-right" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="text-small mb-1">
+                          <Link to="#!" className="text-decoration-none text-muted">
+                            <small>{cat?.name || 'Category'}</small>
+                          </Link>
+                        </div>
+                        <h2 className="fs-6">
+                          <Link to="#!" className="text-inherit text-decoration-none">
+                            {p.name}
+                          </Link>
+                        </h2>
+                        <div className="d-flex justify-content-between align-items-center mt-3">
+                          <div>
+                            <span className="text-dark">Rp{new Intl.NumberFormat('id-ID').format(p.price)}</span>
+                          </div>
+                          <div>
+                           <button className="btn btn-primary btn-sm" onClick={() => handleAddClick(p)}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus">
+                                <line x1={12} y1={5} x2={12} y2={19} />
+                                <line x1={5} y1={12} x2={19} y2={12} />
+                              </svg>{" "}
+                              Add
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
           <div className="row g-4 row-cols-lg-5 row-cols-2 row-cols-md-3">
             <div className="col fade-zoom">
               <div className="card card-product">
@@ -58,8 +202,7 @@ const ProductItem = () => {
                       />
                     </Link>
                     <div className="card-product-action">
-                      <Link
-                        href="#!"
+                      <button
                         className="btn-action"
                         data-bs-toggle="modal"
                         data-bs-target="#quickViewModal"
@@ -70,7 +213,7 @@ const ProductItem = () => {
                           data-bs-html="true"
                           title="Quick View"
                         />
-                      </Link>
+                      </button>
                       <Link
                         href="#!"
                         className="btn-action"
@@ -117,13 +260,10 @@ const ProductItem = () => {
                   </div>
                   <div className="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                      <span className="text-dark">$18</span>{" "}
-                      <span className="text-decoration-line-through text-muted">
-                        $24
-                      </span>
+                      <span className="text-dark">Rp18.000</span>
                     </div>
                     <div>
-                     <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
+                     <button className="btn btn-primary btn-sm" onClick={() => handleAddClick({id: 1, name: "Haldiram's Sev Bhujia", price: 18})}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width={16}
@@ -140,7 +280,7 @@ const ProductItem = () => {
                           <line x1={5} y1={12} x2={19} y2={12} />
                         </svg>{" "}
                         Add
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -220,10 +360,10 @@ const ProductItem = () => {
                   </div>
                   <div className="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                      <span className="text-dark">$24</span>
+                      <span className="text-dark">Rp24.000</span>
                     </div>
                     <div>
-                     <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
+                     <button className="btn btn-primary btn-sm" onClick={() => handleAddClick({id: 2, name: "NutriChoice Digestive", price: 24})}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width={16}
@@ -240,7 +380,7 @@ const ProductItem = () => {
                           <line x1={5} y1={12} x2={19} y2={12} />
                         </svg>{" "}
                         Add
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -318,13 +458,13 @@ const ProductItem = () => {
                   </div>
                   <div className="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                      <span className="text-dark">$32</span>{" "}
+                      <span className="text-dark">Rp32.000</span>{" "}
                       <span className="text-decoration-line-through text-muted">
-                        $35
+                        Rp35.000
                       </span>
                     </div>
                     <div>
-                     <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
+                     <button className="btn btn-primary btn-sm" onClick={() => handleAddClick({id: 3, name: "Cadbury 5 Star Chocolate", price: 32})}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width={16}
@@ -341,7 +481,7 @@ const ProductItem = () => {
                           <line x1={5} y1={12} x2={19} y2={12} />
                         </svg>{" "}
                         Add
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -428,7 +568,7 @@ const ProductItem = () => {
                       </span>
                     </div>
                     <div>
-                     <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
+                     <button href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width={16}
@@ -445,7 +585,7 @@ const ProductItem = () => {
                           <line x1={5} y1={12} x2={19} y2={12} />
                         </svg>{" "}
                         Add
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -523,10 +663,7 @@ const ProductItem = () => {
                   </div>
                   <div className="d-flex justify-content-between mt-4">
                     <div>
-                      <span className="text-dark">$13</span>{" "}
-                      <span className="text-decoration-line-through text-muted">
-                        $18
-                      </span>
+                      <span className="text-dark">Rp13.000</span>
                     </div>
                     <div>
                      <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
@@ -826,10 +963,7 @@ const ProductItem = () => {
                   </div>
                   <div className="d-flex justify-content-between align-items-center mt-3">
                     <div>
-                      <span className="text-dark">$32</span>{" "}
-                      <span className="text-decoration-line-through text-muted">
-                        $35
-                      </span>
+                      <span className="text-dark">Rp32.000</span>
                     </div>
                     <div>
                      <Link href="#!" className="btn btn-primary btn-sm  "onClick={handleAddClick}>
@@ -1058,6 +1192,7 @@ const ProductItem = () => {
               </div>
             </div>
           </div>
+          )}
         </div>
       </section>
       {/* Popular Products End*/}

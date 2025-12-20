@@ -16,8 +16,6 @@ import bakerybiscuits from "../images/bakery-biscuits.png";
 import snackmunchies from "../images/snack-munchies.png";
 import fruitsvegetables from "../images/fruits-vegetables.png";
 import dairybreadeggs from "../images/dairy-bread-eggs.png";
-import grocerybanner from "../images/grocery-banner.png";
-import grocerybanner2 from "../images/grocery-banner-2.jpg";
 import map from "../images/map.png";
 import iphone from "../images/iphone-2.png";
 import googleplay from "../images/googleplay-btn.svg";
@@ -42,6 +40,7 @@ import product9 from "../images/category-snack-munchies.jpg";
 import product10 from "../images/category-tea-coffee-drinks.jpg";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+import { supabase } from '../lib/supabaseClient'
 import ProductItem from "../ProductList/ProductItem";
 import Slider from "react-slick";
 // import "slick-carousel/slick/slick.css";
@@ -198,10 +197,49 @@ const Home = () => {
   };
   // loading
   const [loaderStatus, setLoaderStatus] = useState(true);
+  const [banner, setBanner] = useState(null);
+  const [ctaSection, setCtaSection] = useState(null);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const categoryIcons = {
+    "dairy-bread-eggs": dairybreadeggs,
+    "fruits-vegetables": fruitsvegetables,
+    "snack": snackmunchies,
+    "snack-munchies": snackmunchies,
+    "bakery-biscuits": bakerybiscuits,
+    "instant-food": instantfood,
+    "tea-coffee-drinks": teacoffeedrinks,
+    "cold-drinks-juices": colddrinksjuices,
+    "chicken-meat-fish": chickenmeatfish,
+    "baby-care": babycare,
+    "cleaning-essentials": cleaningessentials,
+    "pet-care": petcare,
+    "atta-rice-dal": attaricedal
+  };
   useEffect(() => {
-    setTimeout(() => {
+    const init = async () => {
+      const { data } = await supabase
+        .from('banners')
+        .select('title,subtitle,badge_text,cta_text,cta_url,image_url')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) setBanner(data);
+      const { data: cta } = await supabase
+        .from('ui_sections')
+        .select('is_active,title,subtitle,cta_text,cta_url,icon_url')
+        .eq('key', 'welcome_cta')
+        .maybeSingle();
+      if (cta) setCtaSection(cta);
+      const { data: cats } = await supabase
+        .from('product_categories')
+        .select('name,slug,icon_url,is_active,sort_order')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+      if (cats) setCategoriesData(cats);
       setLoaderStatus(false);
-    }, 1500);
+    };
+    init();
   }, []);
 
   return (
@@ -241,29 +279,14 @@ const Home = () => {
                   >
                     <div className="carousel-inner">
                       <div className="carousel-item active">
-                        <div
-                          style={{
-                            background: `url(${slider1}) no-repeat`,
-                            backgroundSize: "cover",
-                            borderRadius: ".5rem",
-                            backgroundPosition: "center",
-                          }}
-                        >
+                        <div style={{ background: `url(${(banner && banner.image_url) ? banner.image_url : slider1}) no-repeat`, backgroundSize: "cover", borderRadius: ".5rem", backgroundPosition: "center" }}>
                           <div className="ps-lg-12 py-lg-16 col-xxl-5 col-md-7 py-14 px-8 text-xs-center">
-                            <span className="badge text-bg-warning">
-                              Opening Sale Discount 50%
-                            </span>
+                            <span className="badge text-bg-warning">{banner && banner.badge_text ? banner.badge_text : 'Opening Sale Discount 50%'}</span>
                             <h2 className="text-dark display-5 fw-bold mt-4">
-                              SuperMarket Daily <br /> Fresh Grocery
+                              {(banner && banner.title) ? banner.title : 'SuperMarket Daily '}<br />{(banner && banner.subtitle) ? banner.subtitle : ' Fresh Grocery'}
                             </h2>
-                            <p className="lead">
-                              Introduced a new model for online grocery shopping
-                              and convenient home delivery.
-                            </p>
-                            <Link to="#!" className="btn btn-dark mt-3">
-                              Shop Now{" "}
-                              <i className="feather-icon icon-arrow-right ms-1" />
-                            </Link>
+                            <p className="lead">{(banner && banner.subtitle) ? banner.subtitle : 'Introduced a new model for online grocery shopping and convenient home delivery.'}</p>
+                            <Link to={(banner && banner.cta_url) ? banner.cta_url : '#!'} className="btn btn-dark mt-3">{(banner && banner.cta_text) ? banner.cta_text : 'Shop Now'} <i className="feather-icon icon-arrow-right ms-1" /></Link>
                           </div>
                         </div>
                       </div>
@@ -327,43 +350,36 @@ const Home = () => {
             <>
               <section className="mt-8">
                 {/* contianer */}
-                <div className="container ">
-                  <div className="row">
-                    {/* col */}
-                    <Slide direction="down">
-                      <div className="col-12">
-                        {/* cta */}
-                        <div className="bg-light d-lg-flex justify-content-between align-items-center py-6 py-lg-3 px-8 rounded-3 text-center text-lg-start">
-                          {/* img */}
-                          <div className="d-lg-flex align-items-center">
-                            <img
-                              src={abouticon}
-                              alt="about-icon"
-                              className="img-fluid"
-                            />
-                            {/* text */}
-                            <div className="ms-lg-4">
-                              <h1 className="fs-2 mb-1">
-                                Welcome to FreshCart
-                              </h1>
-                              <span>
-                                Download the app get free food &amp;{" "}
-                                <span className="text-primary">$30</span> off on
-                                your first order.
-                              </span>
+                {(!ctaSection || ctaSection.is_active) && (
+                  <div className="container ">
+                    <div className="row">
+                      <Slide direction="down">
+                        <div className="col-12">
+                          <div className="bg-light d-lg-flex justify-content-between align-items-center py-6 py-lg-3 px-8 rounded-3 text-center text-lg-start">
+                            <div className="d-lg-flex align-items-center">
+                              <img
+                                src={(ctaSection && ctaSection.icon_url) ? ctaSection.icon_url : abouticon}
+                                alt="about-icon"
+                                className="img-fluid"
+                              />
+                              <div className="ms-lg-4">
+                                <h1 className="fs-2 mb-1">{(ctaSection && ctaSection.title) ? ctaSection.title : 'Welcome to FreshCart'}</h1>
+                                <span>
+                                  {(ctaSection && ctaSection.subtitle) ? ctaSection.subtitle : <>Download the app get free food &nbsp;<span className="text-primary">$30</span> off on your first order.</>}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="mt-3 mt-lg-0">
+                              <Link to={(ctaSection && ctaSection.cta_url) ? ctaSection.cta_url : '#'} className="btn btn-dark">
+                                {(ctaSection && ctaSection.cta_text) ? ctaSection.cta_text : 'Download FreshCart App'}
+                              </Link>
                             </div>
                           </div>
-                          <div className="mt-3 mt-lg-0">
-                            {/* btn */}
-                            <Link to="#" className="btn btn-dark">
-                              Download FreshCart App
-                            </Link>
-                          </div>
                         </div>
-                      </div>
-                    </Slide>
+                      </Slide>
+                    </div>
                   </div>
-                </div>
+                )}
               </section>
             </>
             <>
@@ -424,10 +440,10 @@ const Home = () => {
                                 Say yes to <br />
                                 season’s fresh{" "}
                               </h3>
-                              <p className="fs-5">
+                              <div className="fs-5">
                                 Refresh your day <br />
                                 the fruity way
-                              </p>
+                              </div>
                               <Link to="#" className="btn btn-dark mt-2">
                                 Shop Now
                               </Link>
@@ -453,11 +469,11 @@ const Home = () => {
                                 <br />
                                 eat ice cream{" "}
                               </h3>
-                              <p className="fs-5">
+                              <div className="fs-5">
                                 Enjoy a scoop of
                                 <br />
                                 summer today
-                              </p>
+                              </div>
                               <Link to="#" className="btn btn-dark">
                                 Shop Now
                               </Link>
@@ -493,358 +509,30 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="row ">
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={dairybreadeggs}
-                                alt="dairy-bread-eggs"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Dairy, Bread &amp; Eggs
+                      {categoriesData.map((cat) => {
+                        const icon = cat.icon_url && cat.icon_url.startsWith('http') ? cat.icon_url : (categoryIcons[cat.slug] || fruitsvegetables);
+                        return (
+                          <div className="col-lg-2 col-md-4 col-6 fade-zoom" key={cat.slug}>
+                            <Zoom>
+                              <div className="text-center mb-10">
+                                <Link to="#">
+                                  <img src={icon} alt={cat.slug} className="card-image rounded-circle" />
                                 </Link>
-                              </h5>
-                            </div>
+                                <div className="mt-4">
+                                  <h5 className="fs-6 mb-0">
+                                    <Link to="#" className="text-inherit">{cat.name}</Link>
+                                  </h5>
+                                </div>
+                              </div>
+                            </Zoom>
                           </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={fruitsvegetables}
-                                alt="fruits-vegetables"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            <div className="mt-4">
-                              {/* text */}
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Fruits &amp; Vegetables
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={snackmunchies}
-                                alt="snack-munchies"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Snack &amp; Munchies
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={bakerybiscuits}
-                                alt="bakery-biscuits"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Bakery &amp; Biscuits
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={instantfood}
-                                alt="instant-food"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Instant Food
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={teacoffeedrinks}
-                                alt="tea-coffee-drinks"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                <Link to="#" className="text-inherit">
-                                  Tea, Coffee &amp; Drinks
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={colddrinksjuices}
-                                alt="cold-drinks-juices"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                <Link to="#" className="text-inherit">
-                                  Cold Drinks &amp; Juices
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={chickenmeatfish}
-                                alt="chicken-meat-fish"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                <Link to="#" className="text-inherit">
-                                  Chicken, Meat &amp; Fish
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        {/* text */}
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={babycare}
-                                alt="baby-care"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Baby Care
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={cleaningessentials}
-                                alt="cleaning-essentials"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* img */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Cleaning Essentials
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={petcare}
-                                alt="pet-care"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                {" "}
-                                <Link to="#" className="text-inherit">
-                                  Pet Care
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={attaricedal}
-                                alt="atta-rice-dal"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                <Link to="#" className="text-inherit">
-                                  Atta, Rice &amp; Dal
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
               </section>
               {/* section */}
-            </>
-            <>
-              <section>
-                <div className="container ">
-                  <div className="row">
-                    <div className="col-12 col-lg-6 mb-3 mb-lg-0  fade-in-left">
-                      <Slide direction="left">
-                        <div>
-                          <div
-                            className="py-10 px-8 rounded-3"
-                            style={{
-                              background: `url(${grocerybanner}) no-repeat`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                            }}
-                          >
-                            <div>
-                              <h3 className="fw-bold mb-1">
-                                Fruits &amp; Vegetables
-                              </h3>
-                              <p className="mb-4">
-                                Get Upto <span className="fw-bold">30%</span>{" "}
-                                Off
-                              </p>
-                              <Link to="#!" className="btn btn-dark">
-                                Shop Now
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </Slide>
-                    </div>
-                    <div className="col-12 col-lg-6 fade-in-left ">
-                      <Slide direction="right">
-                        <div>
-                          <div
-                            className="py-10 px-8 rounded-3"
-                            style={{
-                              background: `url(${grocerybanner2}) no-repeat`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                            }}
-                          >
-                            <div>
-                              <h3 className="fw-bold mb-1">
-                                Freshly Baked Buns
-                              </h3>
-                              <p className="mb-4">
-                                Get Upto <span className="fw-bold">25%</span>{" "}
-                                Off
-                              </p>
-                              <Link to="#!" className="btn btn-dark">
-                                Shop Now
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </Slide>
-                    </div>
-                  </div>
-                </div>
-              </section>
             </>
             <>
               <ProductItem />

@@ -1,5 +1,43 @@
 <h1 align="center"> Grocery React</h1>
 
+### Environment Setup
+
+To run this application, you need to configure your Supabase environment variables.
+
+1.  **Create a `.env` file** in the `ui` directory.
+2.  **Add the following variables** to the `.env` file:
+
+    ```
+    REACT_APP_SUPABASE_URL=YOUR_SUPABASE_URL
+    REACT_APP_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+    ```
+
+    Replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your actual Supabase URL and anon key.
+
+### Running the Application
+
+**Development Mode:**
+
+To run the app in development mode, use the following command:
+
+```
+npm start
+```
+
+This will start the development server and automatically open the app in your browser.
+
+**Production Mode:**
+
+To build the app for production, use the following command:
+
+```
+npm run build
+```
+
+This will create a `build` folder with the optimized production-ready files.
+
+
+
 <p float="left">
   <img src="./src/Demoimages/01.png"  width = 45%/>
   <img src="./src/Demoimages/02.png"  width = 45%/>

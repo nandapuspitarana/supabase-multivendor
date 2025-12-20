@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import signinimage from '../../images/signin-g.svg'
 import { Link } from "react-router-dom";
 import ScrollToTop from "../ScrollToTop";
+import { supabase } from '../../lib/supabaseClient'
 // import Grocerylogo from '../../images/Grocerylogo.png'
 
 const MyAccountSignIn = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    const { error: signErr } = await supabase.auth.signInWithPassword({ email, password })
+    if (signErr) {
+      setError(signErr.message)
+      setLoading(false)
+      return
+    }
+    setLoading(false)
+    window.location.href = '/Grocery-react/'
+  }
   return (
     <div>
       <>
@@ -51,7 +69,7 @@ const MyAccountSignIn = () => {
                       started.
                     </p>
                   </div>
-                  <form>
+                  <form onSubmit={onSubmit}>
                     <div className="row g-3">
                       {/* row */}
                       <div className="col-12">
@@ -62,6 +80,8 @@ const MyAccountSignIn = () => {
                           id="inputEmail4"
                           placeholder="Email"
                           required
+                          value={email}
+                          onChange={(e)=>setEmail(e.target.value)}
                         />
                       </div>
                       <div className="col-12">
@@ -72,6 +92,8 @@ const MyAccountSignIn = () => {
                           id="inputPassword4"
                           placeholder="Password"
                           required
+                          value={password}
+                          onChange={(e)=>setPassword(e.target.value)}
                         />
                       </div>
                       <div className="d-flex justify-content-between">
@@ -100,9 +122,10 @@ const MyAccountSignIn = () => {
                       {/* btn */}
                       <div className="col-12 d-grid">
                         {" "}
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className="btn btn-primary" disabled={loading}>
                           Sign In
                         </button>
+                        {error ? <div className="text-danger mt-2">{error}</div> : null}
                       </div>
                       {/* link */}
                       <div>

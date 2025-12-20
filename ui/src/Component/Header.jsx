@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grocerylogo from "../images/Grocerylogo.png";
 import menubanner from "../images/menu-banner.jpg";
 import productimage1 from '../images/product-img-1.jpg'
@@ -7,11 +7,81 @@ import productimage3 from '../images/product-img-3.jpg'
 import productimage4 from '../images/product-img-4.jpg'
 import productimage5 from '../images/product-img-5.jpg'
 import { Link } from "react-router-dom";
+import { supabase } from '../lib/supabaseClient';
 
 const Header = () => {
 
 
   const [isOpen, setIsOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  const [groupedCart, setGroupedCart] = useState({});
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      let cartData = [];
+
+      if (session) {
+        const { data, error } = await supabase
+          .from('cart')
+          .select('*, products(*, stores(*))')
+          .eq('user_id', session.user.id);
+
+        if (error) {
+          console.error('Error fetching cart:', error);
+        } else {
+          cartData = data;
+        }
+      } else {
+        let guestCart = JSON.parse(localStorage.getItem('guestCart')) || [];
+        const normalizedCart = guestCart.map(item => {
+          if (item.products === undefined) {
+            const productData = { ...item };
+            delete productData.quantity;
+
+            return {
+              id: item.id,
+              product_id: item.id,
+              quantity: item.quantity,
+              products: productData
+            };
+          }
+          return item;
+        });
+        cartData = normalizedCart;
+        localStorage.setItem('guestCart', JSON.stringify(normalizedCart));
+      }
+      
+      setCartItems(cartData);
+      const totalItems = cartData.reduce((count, item) => count + item.quantity, 0);
+      setCartCount(totalItems);
+
+      const grouped = cartData.reduce((acc, item) => {
+        const storeName = item.products && item.products.stores ? item.products.stores.name : 'Toko Lainnya';
+        if (!acc[storeName]) {
+          acc[storeName] = [];
+        }
+        acc[storeName].push(item);
+        return acc;
+      }, {});
+      setGroupedCart(grouped);
+    };
+
+    const handleCartUpdate = () => {
+      fetchCartData();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+
+    fetchCartData();
+    window.addEventListener('storage', fetchCartData); 
+
+    return () => {
+      window.removeEventListener('storage', fetchCartData);
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+    };
+  }, []);
 
   const handleClick = () => {
     setIsOpen(!isOpen);
@@ -105,12 +175,14 @@ const Header = () => {
                           <line x1={3} y1={6} x2={21} y2={6} />
                           <path d="M16 10a4 4 0 0 1-8 0" />
                         </svg>
-                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                          1
-                          <span className="visually-hidden">
-                            unread messages
+                        {cartCount > 0 && (
+                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                            {cartCount}
+                            <span className="visually-hidden">
+                              unread messages
+                            </span>
                           </span>
-                        </span>
+                        )}
                       </Link>
                     </div>
                   </div>
@@ -214,9 +286,12 @@ const Header = () => {
                       <line x1={3} y1={6} x2={21} y2={6} />
                       <path d="M16 10a4 4 0 0 1-8 0" />
                     </svg>
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                      1<span className="visually-hidden">unread messages</span>
-                    </span>
+                    {cartCount > 0 && (
+                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                        {cartCount}
+                        <span className="visually-hidden">unread messages</span>
+                      </span>
+                    )}
                   </Link>
                 </div>
               </div>
@@ -261,18 +336,17 @@ const Header = () => {
       <div className="collapse navbar-collapse" id="mobile_nav">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0 float-md-right"></ul>
         <ul className="navbar-nav navbar-light">
-          <li className="nav-item">
-            <li className="nav-item dmenu dropdown">
-              <Link
-                className="nav-link dropdown-toggle"
-                to=""
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <span class="me-1">
+          <li className="nav-item dmenu dropdown">
+            <Link
+              className="nav-link dropdown-toggle"
+              to=""
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+                <span className="me-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -280,10 +354,10 @@ const Header = () => {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="1.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-grid"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="feather feather-grid"
                   >
                     <rect x="3" y="3" width="7" height="7"></rect>
                     <rect x="14" y="3" width="7" height="7"></rect>
@@ -320,7 +394,6 @@ const Header = () => {
                 </Link>
               </div>
             </li>
-          </li>
           <li className="nav-item">
             <Link className="nav-link" to="/Grocery-react/">
               Home
@@ -342,7 +415,7 @@ const Header = () => {
               className="dropdown-menu sm-menu"
               aria-labelledby="navbarDropdown"
             >
-              <Link class="dropdown-item" to="/Blog">
+              <Link className="dropdown-item" to="/Blog">
                 Blog
               </Link>
               {/* <Link className="dropdown-item" to="pages/blog-single.html">
@@ -437,7 +510,7 @@ const Header = () => {
                   className="dropdown-menu sm-menu"
                   aria-labelledby="navbarDropdown"
                 >
-                  <Link class="dropdown-item" to="pages/blog.html">
+                  <Link className="dropdown-item" to="pages/blog.html">
                     Blog
                   </Link>
                   <div>
@@ -773,386 +846,72 @@ const Header = () => {
           />
         </div>
         <div className="offcanvas-body">
-          <div className="alert alert-danger" role="alert">
-            You’ve got FREE delivery. Start checkout now!
+          <div className="alert alert-danger p-2" role="alert">
+            You’ve got FREE delivery. Start{" "}
+            <Link to="#!" className="alert-link">
+              checkout now!
+            </Link>
           </div>
           <div>
-            <div className="py-3">
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item py-3 px-0 border-top">
-                  <div className="row align-items-center">
-                    <div className="col-2">
-                      <img
-                        src={productimage1}
-                        alt="Ecommerce"
-                        className="img-fluid"
-                      />
-                    </div>
-                    <div className="col-5">
-                      <h6 className="mb-0">Organic Banana</h6>
-                      <span>
-                        <small className="text-muted">.98 / lb</small>
-                      </span>
-                      <div className="mt-2 small">
-                        {" "}
-                        <Link to="#!" className="text-decoration-none">
-                          {" "}
-                          <span className="me-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width={16}
-                              height={16}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1={10} y1={11} x2={10} y2={17} />
-                              <line x1={14} y1={11} x2={14} y2={17} />
-                            </svg>
-                          </span>
-                          Remove
-                        </Link>
+            {Object.keys(groupedCart).length > 0 ? (
+              Object.entries(groupedCart).map(([storeName, items]) => {
+                const storeTotal = items.reduce((total, item) => {
+                  const price = (item.products && item.products.price) ? item.products.price : 0;
+                  return total + price * item.quantity;
+                }, 0);
+
+                return (
+                  <div key={storeName} className="mb-4">
+                    <div className="card">
+                      <div className="card-body">
+                        <h5 className="card-title">{storeName}</h5>
+                        <ul className="list-group list-group-flush">
+                          {items.map((item, index) => {
+                            const product = item.products || {};
+                            const price = product.price || 0;
+                            const imageUrl = product.image_url || productimage1; // Fallback image
+                            return (
+                              <li key={index} className="list-group-item py-3 ps-0">
+                                <div className="row align-items-center">
+                                  <div className="col-3 col-md-2">
+                                    <img src={imageUrl} alt={product.name} className="img-fluid" />
+                                  </div>
+                                  <div className="col-4 col-md-6">
+                                    <h6 className="mb-0">{product.name || 'Unknown Product'}</h6>
+                                    <span>
+                                      <small className="text-muted">Qty: {item.quantity}</small>
+                                    </span>
+                                  </div>
+                                  <div className="col-3 col-md-4 text-lg-end text-start text-md-end">
+                                    <span className="fw-bold">
+                                      Rp{price * item.quantity}
+                                    </span>
+                                  </div>
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
                       </div>
-                    </div>
-                    <div className="col-3">
-                      <div className="input-group  flex-nowrap justify-content-center  ">
-                        <input
-                          type="button"
-                          defaultValue="-"
-                          className="button-minus form-control  text-center flex-xl-none w-xl-30 w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                        <input
-                          type="number"
-                          step={1}
-                          max={10}
-                          defaultValue={1}
-                          name="quantity"
-                          className="quantity-field form-control text-center flex-xl-none w-xl-30 w-xxl-10 px-0 "
-                        />
-                        <input
-                          type="button"
-                          defaultValue="+"
-                          className="button-plus form-control  text-center flex-xl-none w-xl-30  w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
+                      <div className="card-body border-top">
+                        <div className="d-flex justify-content-between">
+                          <h5 className="mb-0">Total</h5>
+                          <h5 className="mb-0">Rp{storeTotal}</h5>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-2 text-end">
-                      <span className="fw-bold">$35.00</span>
                     </div>
                   </div>
-                </li>
-                <li className="list-group-item py-3 px-0">
-                  <div className="row row align-items-center">
-                    <div className="col-2">
-                      <img
-                        src={productimage2}
-                        alt="Ecommerce"
-                        className="img-fluid"
-                      />
-                    </div>
-                    <div className="col-5">
-                      <h6 className="mb-0">Fresh Garlic, 250g</h6>
-                      <span>
-                        <small className="text-muted">250g</small>
-                      </span>
-                      <div className="mt-2 small">
-                        {" "}
-                        <Link to="#!" className="text-decoration-none">
-                          {" "}
-                          <span className="me-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width={16}
-                              height={16}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1={10} y1={11} x2={10} y2={17} />
-                              <line x1={14} y1={11} x2={14} y2={17} />
-                            </svg>
-                          </span>
-                          Remove
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col-3">
-                      <div className="input-group  flex-nowrap justify-content-center  ">
-                        <input
-                          type="button"
-                          defaultValue="-"
-                          className="button-minus form-control  text-center flex-xl-none w-xl-30 w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                        <input
-                          type="number"
-                          step={1}
-                          max={10}
-                          defaultValue={1}
-                          name="quantity"
-                          className="quantity-field form-control text-center flex-xl-none w-xl-30 w-xxl-10 px-0 "
-                        />
-                        <input
-                          type="button"
-                          defaultValue="+"
-                          className="button-plus form-control  text-center flex-xl-none w-xl-30  w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-2 text-end">
-                      <span className="fw-bold">$20.97</span>
-                      <span className="text-decoration-line-through text-muted small">
-                        $26.97
-                      </span>
-                    </div>
-                  </div>
-                </li>
-                <li className="list-group-item py-3 px-0">
-                  <div className="row row align-items-center">
-                    <div className="col-2">
-                      <img
-                        src={productimage3}
-                        alt="Ecommerce"
-                        className="img-fluid"
-                      />
-                    </div>
-                    <div className="col-5">
-                      <h6 className="mb-0">Fresh Onion, 1kg</h6>
-                      <span>
-                        <small className="text-muted">1 kg</small>
-                      </span>
-                      <div className="mt-2 small">
-                        {" "}
-                        <Link to="#!" className="text-decoration-none">
-                          {" "}
-                          <span className="me-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width={16}
-                              height={16}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1={10} y1={11} x2={10} y2={17} />
-                              <line x1={14} y1={11} x2={14} y2={17} />
-                            </svg>
-                          </span>
-                          Remove
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col-3">
-                      <div className="input-group  flex-nowrap justify-content-center  ">
-                        <input
-                          type="button"
-                          defaultValue="-"
-                          className="button-minus form-control  text-center flex-xl-none w-xl-30 w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                        <input
-                          type="number"
-                          step={1}
-                          max={10}
-                          defaultValue={1}
-                          name="quantity"
-                          className="quantity-field form-control text-center flex-xl-none w-xl-30 w-xxl-10 px-0 "
-                        />
-                        <input
-                          type="button"
-                          defaultValue="+"
-                          className="button-plus form-control  text-center flex-xl-none w-xl-30  w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-2 text-end">
-                      <span className="fw-bold">$25.00</span>
-                      <span className="text-decoration-line-through text-muted small">
-                        $45.00
-                      </span>
-                    </div>
-                  </div>
-                </li>
-                <li className="list-group-item py-3 px-0">
-                  <div className="row row align-items-center">
-                    <div className="col-2">
-                      <img
-                        src={productimage4}
-                        alt="Ecommerce"
-                        className="img-fluid"
-                      />
-                    </div>
-                    <div className="col-5">
-                      <h6 className="mb-0">Fresh Ginger</h6>
-                      <span>
-                        <small className="text-muted">250g</small>
-                      </span>
-                      <div className="mt-2 small">
-                        {" "}
-                        <Link to="#!" className="text-decoration-none">
-                          {" "}
-                          <span className="me-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width={16}
-                              height={16}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1={10} y1={11} x2={10} y2={17} />
-                              <line x1={14} y1={11} x2={14} y2={17} />
-                            </svg>
-                          </span>
-                          Remove
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col-3">
-                      <div className="input-group  flex-nowrap justify-content-center  ">
-                        <input
-                          type="button"
-                          defaultValue="-"
-                          className="button-minus form-control  text-center flex-xl-none w-xl-30 w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                        <input
-                          type="number"
-                          step={1}
-                          max={10}
-                          defaultValue={1}
-                          name="quantity"
-                          className="quantity-field form-control text-center flex-xl-none w-xl-30 w-xxl-10 px-0 "
-                        />
-                        <input
-                          type="button"
-                          defaultValue="+"
-                          className="button-plus form-control  text-center flex-xl-none w-xl-30  w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-2 text-end">
-                      <span className="fw-bold">$39.87</span>
-                      <span className="text-decoration-line-through text-muted small">
-                        $45.00
-                      </span>
-                    </div>
-                  </div>
-                </li>
-                <li className="list-group-item py-3 px-0 border-bottom">
-                  <div className="row row align-items-center">
-                    <div className="col-2">
-                      <img
-                        src={productimage5}
-                        alt="Ecommerce"
-                        className="img-fluid"
-                      />
-                    </div>
-                    <div className="col-5">
-                      <h6 className="mb-0">
-                        Apple Royal Gala, 4 Pieces Box
-                      </h6>
-                      <span>
-                        <small className="text-muted">4 Apple</small>
-                      </span>
-                      <div className="mt-2 small">
-                        {" "}
-                        <Link to="#!" className="text-decoration-none">
-                          {" "}
-                          <span className="me-1">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width={16}
-                              height={16}
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trash-2"
-                            >
-                              <polyline points="3 6 5 6 21 6" />
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                              <line x1={10} y1={11} x2={10} y2={17} />
-                              <line x1={14} y1={11} x2={14} y2={17} />
-                            </svg>
-                          </span>
-                          Remove
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col-3">
-                      <div className="input-group  flex-nowrap justify-content-center  ">
-                        <input
-                          type="button"
-                          defaultValue="-"
-                          className="button-minus form-control  text-center flex-xl-none w-xl-30 w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                        <input
-                          type="number"
-                          step={1}
-                          max={10}
-                          defaultValue={1}
-                          name="quantity"
-                          className="quantity-field form-control text-center flex-xl-none w-xl-30 w-xxl-10 px-0 "
-                        />
-                        <input
-                          type="button"
-                          defaultValue="+"
-                          className="button-plus form-control  text-center flex-xl-none w-xl-30  w-xxl-10 px-0  "
-                          data-field="quantity"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-2 text-end">
-                      <span className="fw-bold">$39.87</span>
-                      <span className="text-decoration-line-through text-muted small">
-                        $45.00
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                );
+              })
+            ) : (
+              <div className="py-3">
+                <p>Keranjang Anda kosong.</p>
+              </div>
+            )}
             <div className="d-grid">
-              <button
-                className="btn btn-primary btn-lg d-flex justify-content-between align-items-center"
-                type="submit"
-              >
-                {" "}
-                Go to Checkout <span className="fw-bold">$120.00</span>
-              </button>
+              <Link to="/order-form" className="btn btn-primary btn-lg d-flex justify-content-between align-items-center">
+                Go to Checkout
+              </Link>
             </div>
           </div>
         </div>
