@@ -496,7 +496,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg4}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -615,7 +615,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg5}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -728,7 +728,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg1}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -847,7 +847,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg3}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -963,7 +963,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg6}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -1082,7 +1082,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg2}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -1198,7 +1198,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg3}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -1311,7 +1311,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg4}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -1425,7 +1425,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg5}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}
@@ -1541,7 +1541,7 @@ const ShopGridCol3 = () => {
                                   <img
                                     src={productimg6}
                                     alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
+                                    className="mb-3 img-fluid img-square"
                                   />
                                 </Link>
                                 {/* action btn */}

@@ -414,7 +414,7 @@ color="#0aad0a"
                       <img
                         src={product1}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -523,7 +523,7 @@ color="#0aad0a"
                       <img
                         src={product2}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -625,7 +625,7 @@ color="#0aad0a"
                       <img
                         src={product3}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -734,7 +734,7 @@ color="#0aad0a"
                       <img
                         src={product4}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -839,7 +839,7 @@ color="#0aad0a"
                       <img
                         src={product5}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -947,7 +947,7 @@ color="#0aad0a"
                       <img
                         src={product6}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -1052,7 +1052,7 @@ color="#0aad0a"
                       <img
                         src={product7}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -1154,7 +1154,7 @@ color="#0aad0a"
                       <img
                         src={product8}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -1259,7 +1259,7 @@ color="#0aad0a"
                       <img
                         src={product9}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}
@@ -1364,7 +1364,7 @@ color="#0aad0a"
                       <img
                         src={product10}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     {/* action btn */}

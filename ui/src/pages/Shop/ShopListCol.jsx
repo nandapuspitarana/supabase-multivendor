@@ -501,7 +501,7 @@ const ShopListCol = () => {
                                       <img
                                         src={productimg1}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                   </div>
@@ -624,7 +624,7 @@ const ShopListCol = () => {
                                       <img
                                         src={productimg2}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                   </div>
@@ -750,7 +750,7 @@ const ShopListCol = () => {
                                       <img
                                         src={productimg3}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                   </div>
@@ -870,7 +870,7 @@ const ShopListCol = () => {
                                       <img
                                         src={productimg4}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                   </div>
@@ -993,7 +993,7 @@ const ShopListCol = () => {
                                       <img
                                         src={productimg5}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                   </div>

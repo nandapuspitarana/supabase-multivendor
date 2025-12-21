@@ -3,16 +3,16 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { Link } from "react-router-dom";
 
 import Grocerylogo from "../../images/Grocerylogo.png";
-import product1 from "../../images/category-baby-care.jpg";
-import product2 from "../../images/category-atta-rice-dal.jpg";
-import product3 from "../../images/category-bakery-biscuits.jpg";
-import product4 from "../../images/category-chicken-meat-fish.jpg";
-import product5 from "../../images/category-cleaning-essentials.jpg";
-import product6 from "../../images/category-dairy-bread-eggs.jpg";
-import product7 from "../../images/category-instant-food.jpg";
-import product8 from "../../images/category-pet-care.jpg";
-import product9 from "../../images/category-snack-munchies.jpg";
-import product10 from "../../images/category-tea-coffee-drinks.jpg";
+import productimage1 from "../../images/category-baby-care.jpg";
+import productimage2 from "../../images/category-atta-rice-dal.jpg";
+import productimage3 from "../../images/category-bakery-biscuits.jpg";
+import productimage4 from "../../images/category-chicken-meat-fish.jpg";
+import productimage5 from "../../images/category-cleaning-essentials.jpg";
+import productimage6 from "../../images/category-dairy-bread-eggs.jpg";
+import productimage7 from "../../images/category-instant-food.jpg";
+import productimage8 from "../../images/category-pet-care.jpg";
+import productimage9 from "../../images/category-snack-munchies.jpg";
+import productimage104r3err from "../../images/category-tea-coffee-drinks.jpg";
 import graphics from "../../images/store-graphics.svg";
 import { MagnifyingGlass } from "react-loader-spinner";
 import ScrollToTop from "../ScrollToTop";
@@ -413,11 +413,11 @@ const SingleShop = () => {
                                 </div>
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product1}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage1}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -528,11 +528,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product2}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage2}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -639,11 +639,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product3}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage3}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -753,11 +753,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product4}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage4}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -867,11 +867,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product5}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage5}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -983,11 +983,11 @@ const SingleShop = () => {
                                 </div>
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product6}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage6}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -1098,11 +1098,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product7}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage7}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -1209,11 +1209,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product8}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage8}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -1321,11 +1321,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product9}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage9}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">
@@ -1435,11 +1435,11 @@ const SingleShop = () => {
                                 {/* badge */}
                                 <Link to="#!">
                                   {/* img */}
-                                  <img
-                                    src={product10}
-                                    alt="Grocery Ecommerce Template"
-                                    className="mb-3 img-fluid"
-                                  />
+                                    <img
+                                      src={productimage10}
+                                      alt="Grocery Ecommerce Template"
+                                      className="mb-3 img-fluid img-square"
+                                    />
                                 </Link>
                                 {/* btn action */}
                                 <div className="card-product-action">

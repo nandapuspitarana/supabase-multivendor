@@ -140,7 +140,7 @@ const ProductItem = () => {
                       <div className="card-body">
                         <div className="text-center position-relative ">
                           <Link to="#!">
-                            <img src={img} alt={p.name} className="mb-3 img-fluid " />
+                            <img src={img} alt={p.name} className="mb-3 img-fluid img-square" />
                           </Link>
                           <div className="card-product-action">
                             <Link to="#!" className="btn-action" data-bs-toggle="modal" data-bs-target="#quickViewModal">
@@ -198,7 +198,7 @@ const ProductItem = () => {
                       <img
                         src={product1}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid "
+                        className="mb-3 img-fluid img-square "
                       />
                     </Link>
                     <div className="card-product-action">
@@ -297,7 +297,7 @@ const ProductItem = () => {
                       <img
                         src={product2}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -395,7 +395,7 @@ const ProductItem = () => {
                       <img
                         src={product3}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -496,7 +496,7 @@ const ProductItem = () => {
                       <img
                         src={product4}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -600,7 +600,7 @@ const ProductItem = () => {
                       <img
                         src={product5}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -701,7 +701,7 @@ const ProductItem = () => {
                       <img
                         src={product6}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -802,7 +802,7 @@ const ProductItem = () => {
                       <img
                         src={product7}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -900,7 +900,7 @@ const ProductItem = () => {
                       <img
                         src={product8}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -998,7 +998,7 @@ const ProductItem = () => {
                       <img
                         src={product9}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">
@@ -1099,7 +1099,7 @@ const ProductItem = () => {
                       <img
                         src={product10}
                         alt="Grocery Ecommerce Template"
-                        className="mb-3 img-fluid"
+                        className="mb-3 img-fluid img-square"
                       />
                     </Link>
                     <div className="card-product-action">

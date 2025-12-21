@@ -708,7 +708,7 @@ const Home = () => {
                                       <img
                                         src={product11}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                     <div className="card-product-action">
@@ -822,7 +822,7 @@ const Home = () => {
                                       <img
                                         src={product12}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                     <div className="card-product-action">
@@ -936,7 +936,7 @@ const Home = () => {
                                       <img
                                         src={product13}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                     <div className="card-product-action">
@@ -1050,7 +1050,7 @@ const Home = () => {
                                       <img
                                         src={product13}
                                         alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
+                                        className="mb-3 img-fluid img-square"
                                       />
                                     </Link>
                                     <div className="card-product-action">
@@ -1248,8 +1248,7 @@ const Home = () => {
                               <h3 className="h5 mb-3">10 minute grocery now</h3>
                               <p>
                                 Get your order delivered to your doorstep at the
-                                earliest from FreshCart pickup
-                                <p> stores near you.</p>
+                                earliest from FreshCart pickup stores near you.
                               </p>
                             </div>
                           </div>
@@ -1382,11 +1381,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product1}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid "
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                      <h6 class="card-title partner">
+                      <h6 className="card-title partner">
                       <div>Baby Care</div>
                       </h6>
                     </div>
@@ -1395,11 +1393,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product2}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Atta, Rice &amp; Dal</div>
                       </h6>
                     </div>
@@ -1408,11 +1405,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product3}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Bakery &amp; Biscuits</div>
                       </h6>
                     </div>
@@ -1421,11 +1417,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product4}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Chicken, Meat &amp; Fish</div>
                       </h6>
                     </div>
@@ -1434,11 +1429,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product5}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Cleaning Essentials</div>
                       </h6>
                     </div>
@@ -1447,11 +1441,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product6}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Dairy, Bread &amp; Eggs</div>
                       </h6>
                     </div>
@@ -1460,11 +1453,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product7}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Instant Food</div>
                       </h6>
                     </div>
@@ -1473,11 +1465,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product8}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                       <div>Pet Care</div>
                       </h6>
                     </div>
@@ -1486,11 +1477,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product9}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Snack &amp; Munchies</div>
                       </h6>
                     </div>
@@ -1499,11 +1489,10 @@ const Home = () => {
                     <div className="partner-list">
                       <img
                         src={product10}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
+                        className="img-fluid img-square"
                         alt="product"
                       />
-                       <h6 class="card-title">
+                       <h6 className="card-title">
                        <div>Tea, Coffee &amp; Drinks</div>
                       </h6>
                     </div>

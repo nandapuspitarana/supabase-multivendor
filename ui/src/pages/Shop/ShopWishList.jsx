@@ -140,7 +140,7 @@ const ShopWishList = () => {
                               data-bs-placement="top"
                               title="Delete"
                             >
-                              <i class="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash-alt"></i>
                             </Link>
                           </td>
                         </tr>
@@ -200,7 +200,7 @@ const ShopWishList = () => {
                               data-bs-placement="top"
                               title="Delete"
                             >
-                              <i class="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash-alt"></i>
                             </Link>
                           </td>
                         </tr>
@@ -258,7 +258,7 @@ const ShopWishList = () => {
                               data-bs-placement="top"
                               title="Delete"
                             >
-                              <i class="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash-alt"></i>
                             </Link>
                           </td>
                         </tr>
@@ -316,7 +316,7 @@ const ShopWishList = () => {
                               data-bs-placement="top"
                               title="Delete"
                             >
-                              <i class="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash-alt"></i>
                             </Link>
                           </td>
                         </tr>
@@ -374,7 +374,7 @@ const ShopWishList = () => {
                               data-bs-placement="top"
                               title="Delete"
                             >
-                              <i class="fas fa-trash-alt"></i>
+                              <i className="fas fa-trash-alt"></i>
                             </Link>
                           </td>
                         </tr>
