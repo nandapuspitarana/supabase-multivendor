@@ -12,7 +12,7 @@ import productimage6 from "../../images/category-dairy-bread-eggs.jpg";
 import productimage7 from "../../images/category-instant-food.jpg";
 import productimage8 from "../../images/category-pet-care.jpg";
 import productimage9 from "../../images/category-snack-munchies.jpg";
-import productimage104r3err from "../../images/category-tea-coffee-drinks.jpg";
+import productimage10 from "../../images/category-tea-coffee-drinks.jpg";
 import graphics from "../../images/store-graphics.svg";
 import { MagnifyingGlass } from "react-loader-spinner";
 import ScrollToTop from "../ScrollToTop";
